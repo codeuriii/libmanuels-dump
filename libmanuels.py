@@ -2,11 +2,12 @@ import os
 import signal
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.edge.options import Options
 from pdfu import generate_pdf, merge_pdfs
 from colorama import Fore, Style, init
-from webdriver_manager.chrome import ChromeDriverManager
+
+if not os.path.exists("manuels"):
+    os.makedirs("manuels")
 
 editor_dict = {
     1: "Magnard",
@@ -17,22 +18,14 @@ editor_dict = {
 init(autoreset=True)
 
 start_time = time.time()
-chrome_options = ChromeOptions()
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--disable-gpu')
-chrome_options.add_argument("--log-level=3")
+options = Options()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+options.add_argument("--log-level=3")
 
-chrome_install = ChromeDriverManager().install()
-
-folder = os.path.dirname(chrome_install)
-if os.name == 'nt':
-    chromedriver_path = os.path.join(os.path.dirname(chrome_install), "chromedriver.exe")
-else:
-    chromedriver_path = os.path.join(os.path.dirname(chrome_install), "chromedriver")
     
-driver = webdriver.Chrome(
-    service = ChromeService(chromedriver_path),
-    options=chrome_options
+driver = webdriver.Edge(
+    options=options
 )
 
 os.system('cls' if os.name == 'nt' else 'clear')
@@ -136,7 +129,10 @@ for i in range(2, int(pn) + 1):
 
 driver.quit()
 
-pdf_files = sorted([f'out_{manid}/{file}' for file in os.listdir(f'out_{manid}') if file.endswith('.pdf')])
+pdf_files = sorted(
+    [f'out_{manid}/{file}' for file in os.listdir(f'out_{manid}') if file.endswith('.pdf')],
+    key=lambda e: int(e.split("/")[1].split(".")[0])
+)
 merge_pdfs(pdf_files, f"manuels/{manid}.pdf")
 print(Fore.MAGENTA + f"Created manual in manuels/{manid}.pdf" + Style.RESET_ALL)
 
@@ -147,5 +143,5 @@ for file in pdf_files:
 os.system('cls' if os.name == 'nt' else 'clear')
 print(Fore.GREEN + "Process completed successfully!" + Style.RESET_ALL)
 print(f"It took {Fore.GREEN} %s seconds{Style.RESET_ALL}." % (time.time() - start_time))
-os.removedirs(f'out_{manid}', exist_ok=True)
+os.removedirs(f'out_{manid}')
 os.startfile(f"manuels/{manid}.pdf")
