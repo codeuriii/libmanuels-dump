@@ -139,9 +139,9 @@ print(Fore.MAGENTA + f"Created manual in manuels/{manid}.pdf" + Style.RESET_ALL)
 for file in pdf_files:
     os.remove(file)
     print(Fore.RED + f"Removed temporary file {file}." + Style.RESET_ALL)
+os.removedirs(f'out_{manid}')
 
 os.system('cls' if os.name == 'nt' else 'clear')
 print(Fore.GREEN + "Process completed successfully!" + Style.RESET_ALL)
 print(f"It took {Fore.GREEN} %s seconds{Style.RESET_ALL}." % (time.time() - start_time))
-os.removedirs(f'out_{manid}')
-os.startfile(f"manuels/{manid}.pdf")
+os.startfile(f"manuels\\{manid}.pdf")
