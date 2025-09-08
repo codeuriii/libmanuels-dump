@@ -1,4 +1,5 @@
 import os
+import sys
 import signal
 import time
 from selenium import webdriver
@@ -8,6 +9,20 @@ from colorama import Fore, Style, init
 
 if not os.path.exists("manuels"):
     os.makedirs("manuels")
+
+def get_arg(field):
+    if len(sys.argv) == 1:
+        return None
+    match field:
+        case "manid":
+            if "--id" in sys.argv:
+                return sys.argv[sys.argv.index("--id") + 1]
+        case "edition":
+            if "--edition" in sys.argv:
+                return sys.argv[sys.argv.index("--edition") + 1]
+        case "delete":
+            return "--no-delete" in sys.argv
+
 
 editor_dict = {
     1: "Magnard",
@@ -29,7 +44,7 @@ driver = webdriver.Edge(
 )
 
 os.system('cls' if os.name == 'nt' else 'clear')
-print(f"""{Fore.RED}
+print(fr"""{Fore.RED}
 
 $$\      $$\                                         $$\       $$$$$$$\                                                        
 $$$\    $$$ |                                        $$ |      $$  __$$\                                                       
@@ -57,18 +72,19 @@ Editor choices:
 4) La Librairie des écoles
 5) Other
       """)
-editor = input("Choose a number for the name for the editor of the book you want to dump. ")
+editor = get_arg("edition") or input("Choose a number for the name for the editor of the book you want to dump. ")
 if editor == "5":
     editor = input("\nEnter the name of the editor you want to dump (case-sensitive): ")
 else:
-    try:
-        editor = editor_dict[int(editor)]
-    except (KeyError, ValueError):
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print(Fore.RED + "Invalid editor number. Please choose a number between 1 and 5." + Style.RESET_ALL)
-        exit()
+    if not editor in editor_dict.values():
+        try:
+            editor = editor_dict[int(editor)]
+        except (KeyError, ValueError):
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(Fore.RED + "Invalid editor number. Please choose a number between 1 and 5." + Style.RESET_ALL)
+            exit()
 
-manid = input(Fore.CYAN + "\nEnter the ID of the manual: " + Style.RESET_ALL)
+manid = get_arg("manid") or input(Fore.CYAN + "\nEnter the ID of the manual: " + Style.RESET_ALL)
 if not manid:
     os.system('cls' if os.name == 'nt' else 'clear')
     print(Fore.RED + "No ID provided. Please provide a manual id." + Style.RESET_ALL)
@@ -96,12 +112,17 @@ print(Fore.GREEN + f"Total {pn} pages detected." + Style.RESET_ALL)
 os.makedirs(f'out_{manid}', exist_ok=True)
 
 def signal_handler(signal, frame):
+    if get_arg("delete"):
+        print(Fore.RED + "\nKeyboard interrupt detected. No delete flag detected." + Style.RESET_ALL)    
+        print(Fore.RED + "Process interrupted." + Style.RESET_ALL)
+        exit(1)
     print(Fore.RED + "\nKeyboard interrupt detected. Cleaning up temporary files..." + Style.RESET_ALL)
     driver.quit()
     pdf_files = [f'out_{manid}/{file}' for file in os.listdir(f'out_{manid}') if file.endswith('.pdf')]
     for file in pdf_files:
         os.remove(file)
         print(Fore.RED + f"Removed temporary file {file}." + Style.RESET_ALL)
+    os.removedirs(f"out_{manid}")
     os.system('cls' if os.name == 'nt' else 'clear')
     print(Fore.RED + "Process interrupted." + Style.RESET_ALL)
     exit(1)
