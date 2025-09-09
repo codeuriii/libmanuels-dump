@@ -134,18 +134,21 @@ if utype == 1:
 else:
     url = f'https://storage.libmanuels.fr/{editor}/manuel/{manid}/1/OEBPS/cover.xhtml?interface=postMessage'
 pdf_file = generate_pdf(driver, url)
-with open(f'out_{manid}/000.pdf', "wb") as outfile:
-    outfile.write(pdf_file.getbuffer())
+if not os.path.exists(f"out_{manid}/000.pdf"):
+    with open(f'out_{manid}/000.pdf', "wb") as outfile:
+        outfile.write(pdf_file.getbuffer())
 print(Fore.BLUE + "Generated PDF for cover." + Style.RESET_ALL)
 for i in range(2, int(pn) + 1):
-    page_number = str(i).zfill(3)
-    if utype == 1:
-        url = f'https://storage.libmanuels.fr/{editor}/specimen/{manid}/1/OEBPS/page{page_number}.xhtml?interface=postMessage'
-    else:
-        url = f'https://storage.libmanuels.fr/{editor}/manuel/{manid}/1/OEBPS/page{page_number}.xhtml?interface=postMessage'
-    pdf_file = generate_pdf(driver, url)
-    with open(f'out_{manid}/{i}.pdf', "wb") as outfile:
-        outfile.write(pdf_file.getbuffer())
+    filename = f'out_{manid}/{i}.pdf'
+    if not os.path.exists(filename):
+        page_number = str(i).zfill(3)
+        if utype == 1:
+            url = f'https://storage.libmanuels.fr/{editor}/specimen/{manid}/1/OEBPS/page{page_number}.xhtml?interface=postMessage'
+        else:
+            url = f'https://storage.libmanuels.fr/{editor}/manuel/{manid}/1/OEBPS/page{page_number}.xhtml?interface=postMessage'
+        pdf_file = generate_pdf(driver, url)
+        with open(filename, "wb") as outfile:
+            outfile.write(pdf_file.getbuffer())
     print(Fore.BLUE + f"Generated PDF for page {i}." + Style.RESET_ALL)
 
 driver.quit()
