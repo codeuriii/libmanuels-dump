@@ -60,7 +60,7 @@ $$ | \_/ $$ |\$$$$$$$ |$$ |  $$ |\$$$$$$  |\$$$$$$$ |$$ |      $$$$$$$  |\$$$$$$
 
 {Style.RESET_ALL}
 {Fore.YELLOW}libmanuels.Fr edititon. {Style.RESET_ALL} To find books to dump, use this https://demo.edulib.fr/bibliotheque and check the book id in the url. Ex: 9782210783133
-By {Fore.BLUE}Ulysse2211{Style.RESET_ALL}, thanks to the contribution of {Fore.RED}miickboy{Style.RESET_ALL} and {Fore.RED}noh.am{Style.RESET_ALL}
+By {Fore.BLUE}Ulysse2211{Style.RESET_ALL}, thanks to the contribution of {Fore.RED}miickboy{Style.RESET_ALL}, {Fore.RED}noh.am{Style.RESET_ALL} and {Fore.RED}codeuriii{Style.RESET_ALL}
       """)
 
 print("""
